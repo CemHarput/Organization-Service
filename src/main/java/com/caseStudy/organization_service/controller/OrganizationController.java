@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/organizations")
 public class OrganizationController {
@@ -57,6 +59,11 @@ public class OrganizationController {
     ) {
         OrganizationDTO updated = organizationService.getByRegistryNumber(registryNumber);
         return ResponseEntity.ok(updated);
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<OrganizationDTO> getOrganizationById(@PathVariable UUID id)  {
+        OrganizationDTO user = organizationService.getByID(id);
+        return ResponseEntity.ok(user);
     }
 
 

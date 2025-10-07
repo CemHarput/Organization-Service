@@ -136,6 +136,13 @@ public class OrganizationService {
         return OrganizationMemberRepository.findByOrganizationId(organizationId, pageable)
                 .map(OrganizationMember::getUserId);
     }*/
+   @Transactional(readOnly = true)
+   public OrganizationDTO getByID(UUID id)  {
+       log.debug("Fetching user by id: {}", id);
+       Organization u = organizationRepository.findById(id)
+               .orElseThrow(() -> new OrgNotFoundException("User not found"));
+       return OrganizationDTO.convertFromOrganization(u);
+   }
 
 
 }
