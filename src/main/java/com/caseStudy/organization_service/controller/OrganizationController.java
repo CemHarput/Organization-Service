@@ -53,7 +53,7 @@ public class OrganizationController {
         return ResponseEntity.ok(updated);
     }
 
-    @GetMapping("/{registryNumber}")
+    @GetMapping("/registryNumber/{registryNumber}")
     public ResponseEntity<OrganizationDTO> getOrganizationByRegistryNumber(
             @PathVariable String registryNumber
     ) {

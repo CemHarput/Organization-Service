@@ -19,7 +19,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -144,7 +143,7 @@ public class OrganizationService {
    public OrganizationDTO getByID(UUID id)  {
        log.debug("Fetching user by id: {}", id);
        Organization u = organizationRepository.findById(id)
-               .orElseThrow(() -> new OrgNotFoundException("User not found"));
+               .orElseThrow(() -> new OrgNotFoundException("Organization not found"));
        return OrganizationDTO.convertFromOrganization(u);
    }
     public void addMember(UUID orgId, UUID userId) {
