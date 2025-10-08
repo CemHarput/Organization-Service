@@ -5,12 +5,14 @@ import com.caseStudy.organization_service.dto.*;
 import com.caseStudy.organization_service.exception.OrgAlreadyExistsException;
 import com.caseStudy.organization_service.exception.OrgNotFoundException;
 import com.caseStudy.organization_service.model.Organization;
+import com.caseStudy.organization_service.model.OrganizationMember;
 import com.caseStudy.organization_service.repository.OrganizationMemberRepository;
 import com.caseStudy.organization_service.repository.OrganizationRepository;
 import com.caseStudy.organization_service.util.NameNormalizer;
 import org.aspectj.weaver.ast.Or;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -28,9 +30,11 @@ public class OrganizationService {
     private static final Logger log = LoggerFactory.getLogger(OrganizationService.class);
 
     private final OrganizationRepository organizationRepository;
+    private final OrganizationMemberRepository organizationMemberRepository;
 
-    public OrganizationService(OrganizationRepository organizationRepository) {
+    public OrganizationService(OrganizationRepository organizationRepository, OrganizationMemberRepository organizationMemberRepository) {
         this.organizationRepository = organizationRepository;
+        this.organizationMemberRepository = organizationMemberRepository;
     }
 
 
@@ -143,6 +147,21 @@ public class OrganizationService {
                .orElseThrow(() -> new OrgNotFoundException("User not found"));
        return OrganizationDTO.convertFromOrganization(u);
    }
+    public void addMember(UUID orgId, UUID userId) {
+        // Idempotent check
+        if (organizationMemberRepository.existsByOrganizationIdAndUserId(orgId, userId)) {
+            return;
+        }
+        OrganizationMember m = new OrganizationMember();
+        m.setOrganizationId(orgId);
+        m.setUserId(userId);
+
+        try {
+            organizationMemberRepository.save(m);
+        } catch (DataIntegrityViolationException e) {
+             log.warn("Member already exists org={}, user={}", orgId, userId);
+        }
+    }
 
 
 }
