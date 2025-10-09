@@ -151,7 +151,6 @@ public class OrganizationService {
 
         if (organizationMemberRepository.existsByOrganizationIdAndUserId(orgId, userId)) {
             log.debug("Member already exists org={}, user={}", orgId, userId);
-            //Buraya inv-service bu zaten eklenmiş diye bir response ekleyebilirsin.
             return;
         }
 
