@@ -66,7 +66,7 @@ public class OrganizationController {
         return ResponseEntity.ok(user);
     }
 
-    @PostMapping("/api/organizations/{orgId}/members")
+    @PostMapping("/{orgId}/members")
     public ResponseEntity<Void> addMember(@PathVariable UUID orgId, @RequestParam UUID userId) {
         organizationService.addMember(orgId, userId);
 

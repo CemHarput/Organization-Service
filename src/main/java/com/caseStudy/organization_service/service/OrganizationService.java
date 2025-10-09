@@ -9,6 +9,7 @@ import com.caseStudy.organization_service.model.OrganizationMember;
 import com.caseStudy.organization_service.repository.OrganizationMemberRepository;
 import com.caseStudy.organization_service.repository.OrganizationRepository;
 import com.caseStudy.organization_service.util.NameNormalizer;
+import jakarta.persistence.EntityNotFoundException;
 import org.aspectj.weaver.ast.Or;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -147,18 +148,22 @@ public class OrganizationService {
        return OrganizationDTO.convertFromOrganization(u);
    }
     public void addMember(UUID orgId, UUID userId) {
-        // Idempotent check
+
         if (organizationMemberRepository.existsByOrganizationIdAndUserId(orgId, userId)) {
+            log.debug("Member already exists org={}, user={}", orgId, userId);
+            //Buraya inv-service bu zaten eklenmiş diye bir response ekleyebilirsin.
             return;
         }
+
         OrganizationMember m = new OrganizationMember();
         m.setOrganizationId(orgId);
         m.setUserId(userId);
 
         try {
             organizationMemberRepository.save(m);
+            log.info("Member added org={}, user={}", orgId, userId);
         } catch (DataIntegrityViolationException e) {
-             log.warn("Member already exists org={}, user={}", orgId, userId);
+             log.warn("Race: member already added concurrently org={}, user={}", orgId, userId);
         }
     }
 
