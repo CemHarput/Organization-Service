@@ -129,18 +129,7 @@ public class OrganizationService {
         Page<Organization> page = organizationRepository.findAll(spec, pageable);
         Page<OrganizationDTO> dtoPage = page.map(OrganizationDTO::convertFromOrganization);
         return PageResponse.from(dtoPage);
-    }
-
-   /* @Transactional(readOnly = true)
-    public Page<UUID> listMemberUserIds(UUID organizationId, Pageable pageable) {
-        // org var mı?
-        if (!organizationRepository.existsById(organizationId)) {
-            throw new jakarta.persistence.EntityNotFoundException("Organization not found");
-        }
-        return OrganizationMemberRepository.findByOrganizationId(organizationId, pageable)
-                .map(OrganizationMember::getUserId);
-    }*/
-   @Transactional(readOnly = true)
+    }@Transactional(readOnly = true)
    public OrganizationDTO getByID(UUID id)  {
        log.debug("Fetching user by id: {}", id);
        Organization u = organizationRepository.findById(id)
@@ -164,6 +153,17 @@ public class OrganizationService {
         } catch (DataIntegrityViolationException e) {
              log.warn("Race: member already added concurrently org={}, user={}", orgId, userId);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse<OrganizationDTO> listOrganizationsByUserId(UUID userId, Pageable pageable) {
+        var page = organizationMemberRepository.findAllByUserId(userId, pageable)
+                .map(OrganizationDTO::convertFromOrganization);
+
+        return PageResponse.of(
+                page.getContent(), page.getNumber(), page.getSize(),
+                page.getTotalElements(), page.getTotalPages()
+        );
     }
 
 

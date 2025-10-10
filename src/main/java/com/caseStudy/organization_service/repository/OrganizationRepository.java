@@ -1,6 +1,8 @@
 package com.caseStudy.organization_service.repository;
 
 import com.caseStudy.organization_service.model.Organization;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -19,4 +21,5 @@ public interface OrganizationRepository extends JpaRepository<Organization, UUID
     Optional<Organization> findByRegistryNumberIgnoreCase(@Param("registryNumber") String registryNumber);
 
     boolean existsByRegistryNumber(String registryNumber);
+
 }
